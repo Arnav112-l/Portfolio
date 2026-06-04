@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#121820"/>
+      <stop offset="100%" stop-color="#0a0e14"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#4d9fff"/>
+      <stop offset="100%" stop-color="#7eb8ff"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect x="0" y="0" width="1200" height="6" fill="url(#accent)"/>
+  <circle cx="900" cy="200" r="180" fill="#4d9fff" fill-opacity="0.12"/>
+  <circle cx="1050" cy="450" r="120" fill="#4d9fff" fill-opacity="0.08"/>
+  <text x="80" y="120" fill="#5a6b7d" font-family="Georgia,serif" font-size="20" font-style="italic">Portfolio</text>
+  <text x="80" y="220" fill="#e8eef5" font-family="Georgia,serif" font-size="72">
+    <tspan font-style="italic" fill="#4d9fff">Arnav</tspan>
+    <tspan> Singh</tspan>
+  </text>
+  <text x="80" y="290" fill="#8b9cb0" font-family="Georgia,serif" font-size="28" font-style="italic">CS @ BITS Pilani · Building StayID</text>
+  <text x="80" y="360" fill="#5a6b7d" font-family="system-ui,sans-serif" font-size="22">Making renting in India a little less painful.</text>
+  <rect x="80" y="420" width="220" height="48" rx="24" fill="#4d9fff"/>
+  <text x="118" y="451" fill="#ffffff" font-family="system-ui,sans-serif" font-size="18" font-weight="600">arnavsingh.dev</text>
+</svg>
