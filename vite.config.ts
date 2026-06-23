@@ -41,12 +41,12 @@ export default defineConfig({
         globPatterns: ["**/*.{js,css,html,svg,png,ico,woff2}"],
         runtimeCaching: [
           {
-            urlPattern: ({ url }) => url.origin === "https://fonts.googleapis.com",
+            urlPattern: /^https:\/\/fonts\.googleapis\.com\/.*/i,
             handler: "StaleWhileRevalidate",
             options: { cacheName: "google-fonts-stylesheets" },
           },
           {
-            urlPattern: ({ url }) => url.origin === "https://fonts.gstatic.com",
+            urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
             handler: "CacheFirst",
             options: {
               cacheName: "google-fonts-webfonts",
