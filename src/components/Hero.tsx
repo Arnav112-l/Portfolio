@@ -1,54 +1,107 @@
-import { currentVenture, home } from "../data/profile";
-import SocialLinks from "./SocialLinks";
+import HeroDemo from "./HeroDemo";
+import Motion from "./Motion";
+import { hero, site } from "../content";
+import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+
+function HeroContent() {
+  const [word, setWord] = useState(0);
+
+  useEffect(() => {
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced) return;
+
+    const id = setInterval(() => {
+      setWord((w) => (w + 1) % hero.rotating.length);
+    }, 2500);
+    return () => clearInterval(id);
+  }, []);
+
+  return (
+    <div className="relative z-10 w-full max-w-4xl">
+      <Motion enter delay={0}>
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 border border-black/10 rounded-xl font-mono text-[11px] tracking-widest text-[#9a9aa3] uppercase mb-8 bg-black/5 backdrop-blur-sm">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#0CAF9B]" />
+          <span>{hero.badge}</span>
+        </div>
+      </Motion>
+
+      <Motion enter delay={100}>
+        <h1 className="hero-title hero-title-charge flex flex-col md:block" data-hero-h1>
+          {hero.headline}{" "}
+          <span className="inline-flex overflow-hidden h-[1.1em] align-bottom items-start relative ml-2 min-w-[280px]">
+            <AnimatePresence mode="popLayout">
+              <motion.em
+                key={word}
+                initial={{ y: "100%", opacity: 0 }}
+                animate={{ y: "0%", opacity: 1 }}
+                exit={{ y: "-100%", opacity: 0 }}
+                transition={{ duration: 0.6, ease: [0.76, 0, 0.24, 1] }}
+                className="hero-title-italic absolute inset-0 text-left text-[#B233FF]"
+              >
+                {hero.rotating[word]}
+                <span className="text-[#FF33A1]">.</span>
+              </motion.em>
+            </AnimatePresence>
+          </span>
+        </h1>
+      </Motion>
+
+      <Motion enter delay={200}>
+        <p className="max-w-xl mt-6 text-[15px] md:text-lg leading-relaxed text-[#9a9aa3]">
+          Hey, I&apos;m Arnav — <strong className="text-gray-900 font-medium">CS @ BITS Pilani</strong>. I build products that reach real users and spend most of my time on <strong className="text-gray-900 font-medium">StayID</strong>.
+        </p>
+      </Motion>
+
+      <Motion enter delay={300}>
+        <div className="flex flex-wrap items-center gap-4 mt-10">
+          <a href="#work" data-magnetic className="inline-flex items-center gap-2 font-sans font-semibold text-[15px] text-white bg-gray-900 px-6 py-3.5 rounded-full transition-transform hover:-translate-y-0.5">
+            See the work <span className="font-mono text-xs">↓</span>
+          </a>
+          <a href={site.resume} download data-magnetic className="inline-flex items-center gap-2 font-sans font-semibold text-[15px] text-gray-900 bg-transparent border border-black/20 px-6 py-3.5 rounded-full transition-colors hover:bg-black/5">
+            Résumé ↗
+          </a>
+        </div>
+      </Motion>
+
+      <Motion enter delay={380}>
+        <div className="hero-quicklinks">
+          <a href={`mailto:${site.email}`}>Email ↗</a>
+          <a href={site.github} target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+          <a href={site.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>
+          <a href={site.resume} download>Résumé ↗</a>
+        </div>
+      </Motion>
+
+      <Motion enter delay={460}>
+        <div className="flex items-center gap-3 mt-14 font-mono text-[11px] tracking-widest uppercase text-gray-900/60">
+          <span className="w-6 h-px bg-black/20" />
+          {hero.now}
+        </div>
+      </Motion>
+    </div>
+  );
+}
 
 export default function Hero() {
   return (
-    <section className="animate-fade-up mb-12 sm:mb-16">
-      <div className="mb-4 inline-flex max-w-full flex-wrap items-center gap-2 rounded-full border border-border bg-surface-raised/60 px-3 py-1.5 text-[11px] text-muted sm:mb-5 sm:px-4 sm:text-xs">
-        <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-accent animate-pulse" />
-        Building {currentVenture.name} · {currentVenture.status}
+    <section id="home" className="hero-wrap relative overflow-hidden">
+      <div className="hero-aurora" />
+      <div className="relative z-10 section-inner grid grid-cols-1 lg:grid-cols-[1.1fr_minmax(300px,32rem)] gap-12 lg:gap-16 items-center">
+        <HeroContent />
+        <div className="justify-self-center lg:justify-self-end w-full">
+          <HeroDemo />
+        </div>
       </div>
-
-      <h1 className="animate-fade-up-delay-1 font-serif text-[2.5rem] leading-[1.05] tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-        <span className="italic text-accent">Arnav</span>{" "}
-        <span className="gradient-text">Singh</span>
-      </h1>
-
-      <p className="animate-fade-up-delay-2 mt-4 max-w-xl font-serif text-lg italic leading-relaxed text-muted sm:mt-5 sm:text-xl md:text-2xl">
-        {home.headline}
-      </p>
-
-      <p className="animate-fade-up-delay-3 mt-3 max-w-xl text-sm leading-relaxed text-subtle sm:text-base">
-        {home.subline}
-      </p>
-
-      <SocialLinks className="animate-fade-up-delay-3 mt-5 sm:mt-6" />
-
-      {home.featured.display && (
-        <a
-          href={home.featured.href}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="animate-fade-up-delay-3 hover-soft mt-5 inline-flex w-fit max-w-full items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-4 py-2 text-xs text-accent hover:border-accent/50 hover:bg-accent/15 sm:mt-6"
-        >
-          {home.featured.title}
-          <span>→</span>
-        </a>
-      )}
-
-      <div className="animate-fade-up-delay-3 mt-6 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:flex-wrap sm:gap-4">
-        <a
-          href="#work"
-          className="hover-soft inline-flex min-h-11 items-center justify-center rounded-full bg-accent px-6 py-3 text-sm font-semibold text-white hover:bg-accent-muted sm:w-auto"
-        >
-          View work
-        </a>
-        <a
-          href="#about"
-          className="hover-soft inline-flex min-h-11 items-center justify-center rounded-full border border-border px-6 py-3 text-sm font-medium text-foreground hover:border-accent/40 hover:bg-surface-raised sm:w-auto"
-        >
-          About me
-        </a>
+      
+      {/* Giant Name Watermark */}
+      <div
+        aria-hidden="true"
+        className="hero-giant absolute left-0 right-0 bottom-0 z-[1] opacity-30 flex items-baseline justify-center gap-[0.18em] font-sans font-extrabold text-[13vw] leading-[0.82] tracking-[-0.04em] whitespace-nowrap pointer-events-none select-none"
+      >
+        <span className="hero-giant-fill">ARNAV</span>
+        <span className="hero-giant-stroke">SINGH</span>
+        <span className="font-mono font-normal text-[0.12em] text-[#9a9aa3] self-start tracking-normal">©{new Date().getFullYear().toString().slice(2)}</span>
       </div>
     </section>
   );

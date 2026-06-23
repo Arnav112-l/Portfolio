@@ -1,126 +1,192 @@
-import {
-  achievements,
-  education,
-  experience,
-  founderStory,
-  productImpact,
-  skills,
-} from "../data/profile";
-import SectionHeader from "./SectionHeader";
+import { useEffect, type CSSProperties } from "react";
+import { about, roles, site } from "../content";
+import GitHubSparkline from "./GitHubSparkline";
+import Motion from "./Motion";
+
+const TILE_ACCENTS: Record<string, string> = {
+  profile: "#2438FF",
+  cta: "#B233FF",
+  building: "#2438FF",
+  education: "#0CAF9B",
+  experience: "#FFAA00",
+  github: "#FF5E00",
+  skills: "#7A2BF5",
+  awards: "#B233FF",
+  leadership: "#0CAF9B",
+};
 
 export default function About() {
-  const skillGroups = [
-    { label: "Languages", items: skills.languages },
-    { label: "Backend", items: skills.backend },
-    { label: "AI / ML", items: skills.ai },
-    { label: "Frontend", items: skills.frontend },
-    { label: "Cloud", items: skills.cloud },
-  ];
+  const bioParts = about.bio.split(about.bioEmphasis);
+
+  useEffect(() => {
+    const root = document.querySelector("[data-bento]");
+    if (!root) return;
+
+    const onMove = (e: Event) => {
+      if (!(e instanceof MouseEvent)) return;
+      const tile = (e.target as Element).closest<HTMLElement>("[data-tile]");
+      if (!tile) return;
+      const rect = tile.getBoundingClientRect();
+      const x = ((e.clientX - rect.left) / rect.width) * 100;
+      const y = ((e.clientY - rect.top) / rect.height) * 100;
+      tile.style.setProperty("--bleed-x", `${x}%`);
+      tile.style.setProperty("--bleed-y", `${y}%`);
+    };
+
+    root.addEventListener("mousemove", onMove, { passive: true });
+    return () => root.removeEventListener("mousemove", onMove);
+  }, []);
 
   return (
-    <section className="mb-20">
-      <SectionHeader
-        eyebrow="About"
-        title="Who is Arnav Singh?"
-        subtitle="Builder · BITS Pilani · Shipping products end to end."
-      />
-
-      <div className="space-y-5">
-        {founderStory.paragraphs.map((paragraph, index) => (
-          <p
-            key={paragraph.slice(0, 40)}
-            className={`leading-relaxed ${
-              index === 0
-                ? "font-serif text-lg italic text-foreground/90"
-                : "text-muted"
-            }`}
-          >
-            {paragraph}
+    <div className="bento" data-bento>
+      <div className="bento-head">
+        <div>
+          <p className="bento-head-eyebrow" data-scramble>
+            [ {about.title} ]
           </p>
-        ))}
-      </div>
-
-      <div className="mt-10 work-card">
-        <h3 className="font-serif text-sm italic text-accent">Education</h3>
-        <p className="mt-2 font-medium text-foreground">{education.degree}</p>
-        <p className="text-sm text-muted">{education.school}</p>
-        <p className="mt-1 text-xs text-subtle">
-          {education.period} · {education.note}
+          <p className="bento-head-title">{about.headline}</p>
+        </div>
+        <p className="bento-head-status">
+          <span className="bento-live-dot" />
+          {about.availability}
         </p>
       </div>
 
-      <div className="mt-8 grid gap-4 lg:grid-cols-2">
-        <div className="work-card">
-          <h3 className="font-serif text-sm italic text-accent">Strengths</h3>
-          <ul className="mt-4 space-y-3">
-            {founderStory.strengths.map((strength) => (
-              <li key={strength} className="text-sm text-muted">
-                — {strength}
-              </li>
-            ))}
-          </ul>
-        </div>
+      <div className="bento-grid bento-grid-recruiter">
+        <Motion delay={0} className="bento-tile-profile">
+          <article className="bento-tile" data-tile style={{ "--tile-accent": TILE_ACCENTS.profile } as CSSProperties}>
+            <span className="bento-label">who i am</span>
+            <p className="bento-who-text">
+              {bioParts[0]}
+              <em>{about.bioEmphasis}</em>
+              {bioParts[1]}
+            </p>
+            <ul className="bento-chips">
+              {about.chips.map((chip) => (
+                <li key={chip}>{chip}</li>
+              ))}
+            </ul>
+          </article>
+        </Motion>
 
-        <div className="work-card">
-          <h3 className="font-serif text-sm italic text-accent">Experience</h3>
-          <ul className="mt-4 space-y-5">
-            {experience.map((item) => (
-              <li key={item.org}>
-                <p className="text-sm font-medium text-foreground">{item.role}</p>
-                <p className="text-xs text-subtle">{item.org}</p>
-                <ul className="mt-2 space-y-1">
-                  {item.points.map((point) => (
-                    <li key={point} className="text-xs leading-relaxed text-muted">
-                      {point}
-                    </li>
-                  ))}
-                </ul>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      <div className="mt-12">
-        <h3 className="mb-4 font-serif text-sm italic text-accent">Technical skills</h3>
-        <div className="grid gap-3 sm:grid-cols-2">
-          {skillGroups.map((group) => (
-            <div key={group.label} className="rounded-lg border border-border p-4">
-              <p className="font-serif text-xs italic text-accent">{group.label}</p>
-              <p className="mt-2 text-sm text-muted">{group.items.join(" · ")}</p>
+        <Motion delay={80} className="bento-tile-cta">
+          <article
+            className="bento-tile bento-tile-actions"
+            data-tile
+            style={{ "--tile-accent": TILE_ACCENTS.cta } as CSSProperties}
+          >
+            <span className="bento-label">quick links</span>
+            <div className="bento-link-stack">
+              {about.quickLinks.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  className="bento-action-link"
+                  data-magnetic
+                  {...(link.download ? { download: true } : {})}
+                  {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                >
+                  {link.label}
+                </a>
+              ))}
             </div>
-          ))}
-        </div>
-      </div>
+          </article>
+        </Motion>
 
-      <div className="mt-12 grid gap-8 lg:grid-cols-2">
-        <div>
-          <h3 className="mb-4 font-serif text-sm italic text-accent">Product impact</h3>
-          <ul className="space-y-2">
-            {productImpact.map((item) => (
-              <li key={item} className="text-sm text-muted">
-                — {item}
-              </li>
-            ))}
-          </ul>
-        </div>
+        <Motion delay={160} className="bento-tile-building">
+          <article className="bento-tile" data-tile style={{ "--tile-accent": TILE_ACCENTS.building } as CSSProperties}>
+            <span className="bento-label bento-label-live">
+              <span className="bento-live-dot" />
+              flagship product
+            </span>
+            <p className="bento-value-lg">{about.building.name}</p>
+            <p className="bento-sub">{about.building.detail}</p>
+            <p className="bento-pitch">{about.building.pitch}</p>
+            <ul className="bento-stack">
+              {about.building.stack.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+            <a href={about.building.github} className="bento-inline-link" target="_blank" rel="noopener noreferrer">
+              View repo ↗
+            </a>
+          </article>
+        </Motion>
 
-        <div>
-          <h3 className="mb-4 font-serif text-sm italic text-accent">Hackathons</h3>
-          <ul className="space-y-3">
-            {achievements.map((item) => (
-              <li key={item.name} className="rounded-lg border border-border p-4">
-                <div className="flex justify-between gap-2">
-                  <p className="text-sm font-medium text-foreground">{item.name}</p>
-                  <span className="text-xs text-subtle">{item.year}</span>
-                </div>
-                <p className="text-xs text-subtle">{item.org}</p>
-                <p className="mt-2 text-xs text-muted">{item.detail}</p>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <Motion delay={240} className="bento-tile-education">
+          <article className="bento-tile" data-tile style={{ "--tile-accent": TILE_ACCENTS.education } as CSSProperties}>
+            <span className="bento-label">education</span>
+            <p className="bento-value-lg">{about.education.school}</p>
+            <p className="bento-sub">{about.education.degree}</p>
+            <p className="bento-edu-period">{about.education.period}</p>
+          </article>
+        </Motion>
+
+        <Motion delay={320} className="bento-tile-experience">
+          <article className="bento-tile" data-tile style={{ "--tile-accent": TILE_ACCENTS.experience } as CSSProperties}>
+            <span className="bento-label">experience</span>
+            <ul className="bento-exp-list">
+              {roles.map((role) => (
+                <li key={role.org}>
+                  <span className="bento-exp-title">{role.title}</span>
+                  <span className="bento-exp-org">{role.org}</span>
+                  <span className="bento-exp-meta">{role.period}</span>
+                </li>
+              ))}
+            </ul>
+          </article>
+        </Motion>
+
+        <Motion delay={400} className="bento-tile-github">
+          <article className="bento-tile" data-tile style={{ "--tile-accent": TILE_ACCENTS.github } as CSSProperties}>
+            <span className="bento-label">
+              github · <a href={site.github}>{about.proof.githubHandle}</a>
+            </span>
+            <GitHubSparkline handle={about.proof.githubHandle} fallbackRepos={about.proof.repos} />
+          </article>
+        </Motion>
+
+        <Motion delay={480} className="bento-tile-skills">
+          <article className="bento-tile" data-tile style={{ "--tile-accent": TILE_ACCENTS.skills } as CSSProperties}>
+            <span className="bento-label">core stack</span>
+            <ul className="bento-stack bento-stack-wrap">
+              {about.coreStack.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </article>
+        </Motion>
+
+        <Motion delay={560} className="bento-tile-awards">
+          <article
+            className="bento-tile bento-tile-featured"
+            data-tile
+            data-glow
+            style={{ "--tile-accent": TILE_ACCENTS.awards } as CSSProperties}
+          >
+            <span className="bento-label">recognition</span>
+            <ul className="bento-award-list">
+              {about.achievements.map((item) => (
+                <li key={item.name} className={item.featured ? "is-featured" : ""}>
+                  <span className="bento-award-name">{item.name}</span>
+                  <span className="bento-award-detail">{item.detail}</span>
+                </li>
+              ))}
+            </ul>
+          </article>
+        </Motion>
+
+        <Motion delay={640} className="bento-tile-leadership">
+          <article className="bento-tile" data-tile style={{ "--tile-accent": TILE_ACCENTS.leadership } as CSSProperties}>
+            <span className="bento-label">beyond code</span>
+            <ul className="bento-lead-list">
+              {about.leadership.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </article>
+        </Motion>
       </div>
-    </section>
+    </div>
   );
 }

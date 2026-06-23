@@ -1,46 +1,114 @@
-import Layout from "./components/Layout";
-import Hero from "./components/Hero";
-import NowStrip from "./components/NowStrip";
-import Venture from "./components/Venture";
-import Projects from "./components/Projects";
+import { useMagnetic, useSmoothScroll } from "./hooks";
+import { useNavHide, usePartyMode, useWelcomeBack } from "./hooks/useNavHide";
 import About from "./components/About";
+import AvailabilityBanner from "./components/AvailabilityBanner";
+import BackTop from "./components/BackTop";
+import CommandPalette, { useCommandPalette } from "./components/CommandPalette";
 import Contact from "./components/Contact";
+import Currently from "./components/Currently";
+import CustomCursor from "./components/CustomCursor";
 import Footer from "./components/Footer";
-import Reveal from "./components/Reveal";
+import Hackathons from "./components/Hackathons";
+import Hero from "./components/Hero";
+import LifeLog from "./components/LifeLog";
+import Marquee from "./components/Marquee";
+import Motion from "./components/Motion";
+import Nav from "./components/Nav";
+import Preloader from "./components/Preloader";
+import SectionHead from "./components/SectionHead";
+import ScrollChrome from "./components/ScrollChrome";
+import ScrambleLabels from "./components/ScrambleLabels";
+import Skills from "./components/Skills";
+import Thesis from "./components/Thesis";
+import Work from "./components/Work";
 
 export default function App() {
+  const { open, setOpen, close } = useCommandPalette();
+  useMagnetic();
+  useSmoothScroll();
+  useNavHide();
+  usePartyMode();
+  useWelcomeBack();
+
   return (
-    <Layout>
-      <Hero />
+    <>
+      <Preloader />
+      <ScrollChrome />
+      <ScrambleLabels />
+      <CustomCursor />
+      <CommandPalette open={open} onClose={close} />
 
-      <Reveal>
-        <NowStrip />
-      </Reveal>
+      <div id="site-surface">
+        <div className="grain-overlay" aria-hidden="true" />
+        <Nav onOpenPalette={() => setOpen(true)} />
+        <BackTop />
 
-      <section id="work">
-        <Reveal>
-          <Venture />
-        </Reveal>
-        <Reveal delay={60}>
-          <Projects />
-        </Reveal>
-      </section>
+        <main className="page">
+          <Hero />
+          <AvailabilityBanner />
 
-      <section id="about">
-        <Reveal>
-          <About />
-        </Reveal>
-      </section>
+          <Motion delay={0}>
+            <Marquee />
+          </Motion>
 
-      <section id="contact">
-        <Reveal>
-          <Contact />
-        </Reveal>
-      </section>
+          <section className="full-section" data-accent="#2438FF">
+            <div className="section-inner">
+              <Currently />
+            </div>
+          </section>
 
-      <Reveal delay={40}>
-        <Footer />
-      </Reveal>
-    </Layout>
+          <Thesis />
+
+          <section className="full-section" data-accent="#0CAF9B">
+            <div className="section-inner">
+              <LifeLog />
+            </div>
+          </section>
+
+          <section id="work" className="full-section section-block work-section" data-accent="#2438FF">
+            <div className="section-inner work-section-intro">
+              <SectionHead
+                label="work"
+                title="Stuff worth shipping."
+                subtitle="StayID first — then hackathon builds and side quests."
+                accent="#2438FF"
+              />
+            </div>
+            <Work />
+          </section>
+
+          <section id="about" className="full-section section-block" data-accent="#FFAA00">
+            <div className="section-inner">
+              <About />
+            </div>
+          </section>
+
+          <section id="build" className="full-section section-block" data-accent="#7A2BF5">
+            <div className="section-inner">
+              <SectionHead
+                label="how i build"
+                title="The stack I ship with."
+                subtitle="Every project, roughly this shape."
+                accent="#7A2BF5"
+              />
+              <Skills />
+              <div className="subsection mt-16">
+                <Motion delay={0}>
+                  <p className="font-mono text-sm tracking-widest uppercase text-muted mb-6">[ the lighter stuff ]</p>
+                </Motion>
+                <Hackathons />
+              </div>
+            </div>
+          </section>
+
+          <section id="contact" className="full-section section-block contact-section" data-accent="#B233FF">
+            <div className="section-inner">
+              <Contact />
+            </div>
+            <Footer />
+          </section>
+        </main>
+      </div>
+    </>
   );
 }

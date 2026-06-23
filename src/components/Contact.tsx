@@ -1,68 +1,96 @@
-import { profile } from "../data/profile";
-import SectionHeader from "./SectionHeader";
-import SocialLinks from "./SocialLinks";
+import { useEffect, useRef, useState } from "react";
+import { contact as contactCopy, site } from "../content";
+import Motion from "./Motion";
 
-const linkItems = [
-  { label: "Email", href: `mailto:${profile.email}`, value: profile.email },
-  { label: "Phone", href: `tel:${profile.phone.replace(/\s/g, "")}`, value: profile.phone },
-  { label: "GitHub", href: profile.links.github, value: `@${profile.githubUsername}` },
-  { label: "LinkedIn", href: profile.links.linkedin, value: "LinkedIn" },
-  { label: "Twitter", href: profile.links.twitter, value: "@Arnav_Singh_1" },
-].filter((item) => item.href && item.href !== "#");
+function burst(x: number, y: number) {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const colors = ["#2438FF", "#7A2BF5", "#0CAF9B", "#FFAA00"];
+  for (let i = 0; i < 8; i++) {
+    const el = document.createElement("div");
+    el.style.cssText = `position:fixed;left:${x}px;top:${y}px;width:8px;height:8px;z-index:10005;pointer-events:none;background:${colors[i % 4]};transform:rotate(45deg);`;
+    document.body.appendChild(el);
+    const angle = (i / 8) * Math.PI * 2 + Math.random() * 0.5;
+    const dist = 40 + Math.random() * 55;
+    el.animate(
+      {
+        transform: `translate(${Math.cos(angle) * dist}px, ${Math.sin(angle) * dist - 22}px) rotate(200deg) scale(0.35)`,
+        opacity: 0,
+      },
+      { duration: 600, easing: "cubic-bezier(0.16, 1, 0.3, 1)", fill: "forwards" },
+    );
+    window.setTimeout(() => el.remove(), 650);
+  }
+}
 
 export default function Contact() {
+  const [copied, setCopied] = useState(false);
+  const lastClickRef = useRef(0);
+
+  useEffect(() => {
+    if (!copied) return;
+    const id = window.setTimeout(() => setCopied(false), 2400);
+    return () => window.clearTimeout(id);
+  }, [copied]);
+
+  const onEmailClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    const now = Date.now();
+    if (now - lastClickRef.current < 3200) {
+      lastClickRef.current = 0;
+      return;
+    }
+    e.preventDefault();
+    lastClickRef.current = now;
+    navigator.clipboard?.writeText(site.email).catch(() => {});
+    setCopied(true);
+    burst(e.clientX, e.clientY);
+  };
+
   return (
-    <section className="mb-8">
-      <SectionHeader
-        eyebrow="Contact"
-        title="Get in touch"
-        subtitle="Open to co-founder intros, StayID pilots, internships, and collaborations."
-      />
+    <div className="contact-end">
+      <Motion delay={0}>
+        <p className="contact-eyebrow">one more thing</p>
+        <h2 className="contact-headline" data-vel-skew>
+          Let&apos;s build something <em>worth shipping.</em>
+        </h2>
+      </Motion>
 
-      <SocialLinks className="mb-8" />
-
-      <ul className="divide-y divide-border rounded-xl border border-border">
-        {linkItems.map((item) => (
-          <li key={item.label}>
-            <a
-              href={item.href}
-              target={item.label === "Email" || item.label === "Phone" ? undefined : "_blank"}
-              rel={
-                item.label === "Email" || item.label === "Phone"
-                  ? undefined
-                  : "noopener noreferrer"
-              }
-              className="group flex min-h-[3.25rem] items-center justify-between gap-3 px-4 py-3 transition-colors duration-200 hover:bg-surface-raised/50 sm:px-5 sm:py-4"
-            >
-              <div className="min-w-0 flex-1">
-                <p className="text-xs uppercase tracking-wider text-subtle">{item.label}</p>
-                <p className="mt-0.5 break-all text-sm text-foreground group-hover:text-accent sm:break-normal">
-                  {item.value}
-                </p>
-              </div>
-              <span className="text-muted transition-transform duration-200 group-hover:translate-x-0.5 group-hover:text-accent">
-                →
-              </span>
-            </a>
-          </li>
-        ))}
-      </ul>
-
-      <div className="mt-8 flex flex-wrap gap-6">
-        {profile.calLink && (
-          <a
-            href={profile.calLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="link-arrow"
-          >
-            Book a 15-min call
-          </a>
-        )}
-        <a href={profile.resumeUrl} download="Arnav-Singh-Resume.pdf" className="link-arrow">
-          Download resume
+      <Motion delay={100}>
+        <a
+          href={`mailto:${site.email}`}
+          className="contact-email"
+          onClick={onEmailClick}
+        >
+          {copied ? "copied ✓" : site.email}
         </a>
-      </div>
-    </section>
+        <p className="contact-hint">click once to copy · twice to open mail</p>
+      </Motion>
+
+      <Motion delay={180}>
+        <ul className="contact-bullets">
+          {contactCopy.bullets.map((b) => (
+            <li key={b}>{b}</li>
+          ))}
+        </ul>
+      </Motion>
+
+      <Motion delay={260}>
+        <div className="contact-links">
+          <a href={site.github} target="_blank" rel="noopener noreferrer">
+            GitHub ↗
+          </a>
+          <a href={site.linkedin} target="_blank" rel="noopener noreferrer">
+            LinkedIn ↗
+          </a>
+          <a href={site.resume} download>
+            Résumé ↗
+          </a>
+          {site.cal && (
+            <a href={site.cal} target="_blank" rel="noopener noreferrer">
+              Book a call ↗
+            </a>
+          )}
+        </div>
+      </Motion>
+    </div>
   );
 }
